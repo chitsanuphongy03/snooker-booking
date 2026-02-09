@@ -29,14 +29,15 @@ Online Snooker Table Booking System with comprehensive Admin Management.
 
 ## 🛠️ Tech Stack
 
-| Category | Technology                   |
-| -------- | ---------------------------- |
-| Frontend | React 18, TypeScript, Vite   |
-| Styling  | Tailwind CSS                 |
-| Backend  | Supabase (PostgreSQL + Auth) |
-| Icons    | Lucide React                 |
-| QR Code  | qrcode.react, html5-qrcode   |
-| Testing  | Playwright                   |
+| Category   | Technology                          |
+| ---------- | ----------------------------------- |
+| Frontend   | React 18, TypeScript, Vite          |
+| Styling    | Tailwind CSS                        |
+| Backend    | Supabase (PostgreSQL + Auth)        |
+| Icons      | Lucide React                        |
+| QR Code    | qrcode.react, html5-qrcode          |
+| Utilities  | clsx, tailwind-merge, framer-motion |
+| Monitoring | Sentry                              |
 
 ## 🚀 Getting Started
 
