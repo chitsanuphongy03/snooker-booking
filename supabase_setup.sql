@@ -1,15 +1,15 @@
 -- =====================================================
 -- SNOOKER BOOKING - COMPLETE DATABASE SETUP
 -- =====================================================
--- รันไฟล์นี้ไฟล์เดียวบน Supabase SQL Editor
--- จะสร้างตาราง, RLS policies, และข้อมูลเริ่มต้นให้ทั้งหมด
+-- Run this single file in the Supabase SQL Editor
+-- It will create tables, RLS policies, and initial data
 -- =====================================================
 
 -- =====================================================
 -- 1. CREATE TABLES
 -- =====================================================
 
--- Tables (โต๊ะสนุกเกอร์)
+-- Tables (Snooker Tables)
 CREATE TABLE IF NOT EXISTS tables (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS tables (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Bookings (การจอง)
+-- Bookings
 CREATE TABLE IF NOT EXISTS bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   table_id UUID REFERENCES tables(id) ON DELETE CASCADE NOT NULL,
@@ -32,12 +32,12 @@ CREATE TABLE IF NOT EXISTS bookings (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Shop Settings (ตั้งค่าร้าน)
+-- Shop Settings
 CREATE TABLE IF NOT EXISTS shop_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   shop_name TEXT NOT NULL DEFAULT 'Snooker Club',
   phone TEXT NOT NULL DEFAULT '02-123-4567',
-  address TEXT NOT NULL DEFAULT 'กรุงเทพมหานคร',
+  address TEXT NOT NULL DEFAULT 'Bangkok',
   open_time TEXT NOT NULL DEFAULT '10:00',
   close_time TEXT NOT NULL DEFAULT '02:00',
   standard_price NUMERIC NOT NULL DEFAULT 100,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS shop_settings (
   late_threshold_minutes INTEGER NOT NULL DEFAULT 10
 );
 
--- Audit Logs (บันทึกการเปลี่ยนแปลง) - Optional
+-- Audit Logs (Optional)
 CREATE TABLE IF NOT EXISTS audit_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -89,7 +89,7 @@ ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 -- 3. CREATE RLS POLICIES
 -- =====================================================
 
--- สำหรับ tables: ทุกคนอ่านได้, แค่ authenticated แก้ไขได้
+-- Tables: Public read, Authenticated write (manage)
 DROP POLICY IF EXISTS "Anyone can read tables" ON tables;
 DROP POLICY IF EXISTS "Authenticated can manage tables" ON tables;
 CREATE POLICY "Anyone can read tables" ON tables FOR SELECT USING (true);
@@ -97,7 +97,7 @@ CREATE POLICY "Authenticated can manage tables" ON tables FOR ALL
   USING (auth.role() = 'authenticated') 
   WITH CHECK (auth.role() = 'authenticated');
 
--- สำหรับ bookings: ทุกคนสร้างและอ่านได้, แค่ authenticated แก้ไข/ลบได้
+-- Bookings: Public create/read, Authenticated update/delete
 DROP POLICY IF EXISTS "Anyone can create bookings" ON bookings;
 DROP POLICY IF EXISTS "Anyone can read bookings" ON bookings;
 DROP POLICY IF EXISTS "Authenticated can update bookings" ON bookings;
@@ -110,7 +110,7 @@ CREATE POLICY "Authenticated can update bookings" ON bookings FOR UPDATE
 CREATE POLICY "Authenticated can delete bookings" ON bookings FOR DELETE 
   USING (auth.role() = 'authenticated');
 
--- สำหรับ shop_settings: ทุกคนอ่านได้, แค่ authenticated แก้ไขได้
+-- Shop Settings: Public read, Authenticated update
 DROP POLICY IF EXISTS "Anyone can read shop_settings" ON shop_settings;
 DROP POLICY IF EXISTS "Authenticated can update shop_settings" ON shop_settings;
 CREATE POLICY "Anyone can read shop_settings" ON shop_settings FOR SELECT USING (true);
@@ -118,7 +118,7 @@ CREATE POLICY "Authenticated can update shop_settings" ON shop_settings FOR UPDA
   USING (auth.role() = 'authenticated')
   WITH CHECK (auth.role() = 'authenticated');
 
--- สำหรับ audit_logs: ทุกคนสร้างได้, แค่ authenticated อ่านได้
+-- Audit Logs: Public insert, Authenticated read
 DROP POLICY IF EXISTS "Anyone can insert audit_logs" ON audit_logs;
 DROP POLICY IF EXISTS "Authenticated can read audit_logs" ON audit_logs;
 CREATE POLICY "Anyone can insert audit_logs" ON audit_logs FOR INSERT WITH CHECK (true);
@@ -139,7 +139,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at);
 -- 5. INSERT SAMPLE DATA
 -- =====================================================
 
--- Sample tables (ถ้ายังไม่มี)
+-- Sample tables (if not exists)
 INSERT INTO tables (name, type, status) 
 SELECT * FROM (VALUES 
   ('Table 1', 'standard', 'available'),
@@ -151,15 +151,15 @@ SELECT * FROM (VALUES
 ) AS t(name, type, status)
 WHERE NOT EXISTS (SELECT 1 FROM tables LIMIT 1);
 
--- Sample shop settings (ถ้ายังไม่มี)
+-- Sample shop settings (if not exists)
 INSERT INTO shop_settings (shop_name, phone, address)
-SELECT 'Snooker Club', '02-123-4567', 'กรุงเทพมหานคร'
+SELECT 'Snooker Club', '02-123-4567', 'Bangkok'
 WHERE NOT EXISTS (SELECT 1 FROM shop_settings LIMIT 1);
 
 -- =====================================================
 -- DONE! ✅
 -- =====================================================
--- ตอนนี้สามารถใช้งานได้แล้ว:
--- - ลูกค้า: จองได้, ดูสถานะได้
--- - Admin: จัดการทุกอย่างได้ (หลัง login)
+-- Ready to use:
+-- - Customer: Can book, check status
+-- - Admin: Can manage everything (after login)
 -- =====================================================

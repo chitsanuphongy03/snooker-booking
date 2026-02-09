@@ -50,7 +50,7 @@ Online Snooker Table Booking System with comprehensive Admin Management.
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/snooker-booking.git
+git clone https://github.com/chitsanuphongy03/snooker-booking.git
 cd snooker-booking
 
 # Install dependencies
