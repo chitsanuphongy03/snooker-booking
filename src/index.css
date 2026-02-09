@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@100;200;300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--color-emerald-600);
+  --color-primary-hover: var(--color-emerald-700);
+  --color-primary-foreground: white;
+  --font-sans: "Sarabun", sans-serif;
+}
+
+:root {
+  --primary: #059669; /* emerald-600 */
+  --primary-foreground: #ffffff;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased font-sans;
+}
+
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+}
+
+/* Hide native picker icons for consistency */
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: none;
+  display: none;
+  -webkit-appearance: none;
+}
